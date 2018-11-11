@@ -12,6 +12,22 @@ class AuthorsRoutes {
     this.router.get("/", (req: express.Request, res: express.Response) => 
       authorsController.index(req, res)
     );
+
+    this.router.post("/:id", (req: express.Request, res: express.Response) => 
+      authorsController.create(req, res)
+    );
+
+    this.router.patch("/:id", (req: express.Request, res: express.Response) => 
+      authorsController.update(req, res)
+    );
+
+    this.router.get("/:id", (req: express.Request, res: express.Response) => 
+      authorsController.show(req, res)
+    );
+
+    this.router.delete("/:id", (req: express.Request, res: express.Response) => 
+      authorsController.destroy(req, res)
+    );
   }
 }
 

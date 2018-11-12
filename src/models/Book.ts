@@ -6,9 +6,12 @@ export class Book extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
   @Column() title: string;
-  @Column() description: string;
+  @Column({type: "text"}) description: string;
 
-  @ManyToOne(type => Author, author => author.books)
+  @ManyToOne(type => Author, author => author.books, {
+    nullable: false, 
+    onDelete: "CASCADE"
+  })
   author: Author;
 
   @CreateDateColumn() createdAt: Date;

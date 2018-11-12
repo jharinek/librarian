@@ -26,14 +26,12 @@ export class BooksController {
   }
 
   public async create(req: Request, res: Response) {
-    const bookParams = req.body.book
-    const newBook: Book = new Book();
-    const author: Author = await Author.findOne(bookParams.authorId);
-
-    newBook.title = bookParams.title;
-    newBook.description = bookParams.description;
+    const params = this.bookParams(req);
+    const newBook: Book = Book.create(params);
+    const author: Author = await Author.findOne(params["authorId"]);    
     newBook.author = author;
-    await newBook.save;
+    
+    await newBook.save();
 
     res.status(200).send({
       data: {
@@ -50,18 +48,11 @@ export class BooksController {
   }
 
   public async update(req: Request, res: Response) {
-    const bookParams = req.body.book
     const id: number = req.params.id;
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(Author)
-      .set(bookParams)
-      .where("id = :id", { id: id })
-      .execute();
-
     const book: Book = await Book.findOne(id);
 
+    await Book.update(book, this.bookParams(req));
+  
     res.status(200).send({
       message: `update: ${book.title}`
     });
@@ -84,6 +75,16 @@ export class BooksController {
     res.status(200).send({
       message: `book destoryed: ${id}`
     });
+  }
+
+  private bookParams(req: Request): {title: string, description: string, authorId: number} {
+    const bookObject = req.body.book
+
+    return {
+      title: bookObject["title"], 
+      description: bookObject["description"],
+      authorId: bookObject["authorId"]
+    }
   }
 }
 

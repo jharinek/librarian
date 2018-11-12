@@ -1,10 +1,23 @@
 import { Request, Response } from "express";
 import { Author } from "../models/Author";
-import {getConnection} from "typeorm";
+import { getConnection } from "typeorm";
 
 export class AuthorsController {
   public async index(req: Request, res: Response) {
-    const authors: Author[] = await Author.find();
+    const query: string = req.query.q;
+    let authors: Author[];
+    
+    if(query && query.length > 0){
+      authors = await getConnection()
+        .createQueryBuilder()
+        .select("author")
+        .from(Author, "author")
+        .where("author.firstName ilike :query", { query: `%${query}%` })
+        .orWhere("author.lastName ilike :query", { query: `%${query}%` })
+        .getMany();
+    } else{
+      authors = await Author.find();
+    }
 
     res.status(200).send({
       message: `OK ${authors.length}`

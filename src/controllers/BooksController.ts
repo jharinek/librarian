@@ -1,11 +1,24 @@
 import { Request, Response } from "express";
 import { Book } from "../models/Book";
 import { Author } from "../models/Author";
-import {getConnection} from "typeorm";
+import { getConnection } from "typeorm";
 
 export class BooksController {
   public async index(req: Request, res: Response) {
-    const books: Book[] = await Book.find();
+    const query: string = req.query.q;
+    let books: Book[];
+
+    if(query && query.length > 0){
+      books = await getConnection()
+        .createQueryBuilder()
+        .select("book")
+        .from(Book, "book")
+        .where("book.title ilike :query", { query: `%${query}%` })
+        .orWhere("book.description ilike :query", { query: `%${query}%` })
+        .getMany();
+    } else{
+      books = await Book.find();
+    }
 
     res.status(200).send({
       message: `Books count: ${books.length}`

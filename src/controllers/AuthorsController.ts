@@ -25,11 +25,8 @@ export class AuthorsController {
   }
 
   public async create(req: Request, res: Response) {
-    const authorParams = req.body.author
-    const newAuthor: Author = new Author();
+    const newAuthor: Author = Author.create(this.authorParams(req));
 
-    newAuthor.firstName = authorParams.firstName;
-    newAuthor.lastName = authorParams.lastName;
     await newAuthor.save();
 
     res.status(200).send({
@@ -38,18 +35,11 @@ export class AuthorsController {
   }
 
   public async update(req: Request, res: Response) {
-    const authorParams = req.body.author
     const id: number = req.params.id;
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(Author)
-      .set(authorParams)
-      .where("id = :id", { id: id })
-      .execute();
-
     const author: Author = await Author.findOne(id);
-
+    
+    await Author.update(author, this.authorParams(req));
+    
     res.status(200).send({
       message: `update: ${author.firstName}`
     });
@@ -72,6 +62,15 @@ export class AuthorsController {
     res.status(200).send({
       message: `destroy ${id}`
     });
+  }
+
+  private authorParams(req: Request): Object {
+    const authorParams = req.body.author
+
+    return {
+      firstName: authorParams["firstName"], 
+      lastName: authorParams["lastName"]
+    }
   }
 }
 

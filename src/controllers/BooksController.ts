@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Book } from "../models/Book";
 import { Author } from "../models/Author";
-import { getConnection } from "typeorm";
+import { getConnection, Like, createQueryBuilder } from "typeorm";
 
 export class BooksController {
   public async index(req: Request, res: Response) {
@@ -13,15 +13,18 @@ export class BooksController {
         .createQueryBuilder()
         .select("book")
         .from(Book, "book")
+        .leftJoinAndSelect("book.author", "author")
         .where("book.title ilike :query", { query: `%${query}%` })
         .orWhere("book.description ilike :query", { query: `%${query}%` })
         .getMany();
     } else{
-      books = await Book.find();
+      books = await Book.find({ relations: ["author"] } );
     }
 
     res.status(200).send({
-      message: `Books count: ${books.length}`
+      data: {
+        books: books.map(book => book.serialize())
+      }
     });
   }
 
@@ -35,14 +38,7 @@ export class BooksController {
 
     res.status(200).send({
       data: {
-        book: {
-          title: newBook.title,
-          description: newBook.description,
-          author: {
-            firstName: newBook.author.firstName,
-            lastName: newBook.author.lastName
-          }
-        }
+        book: newBook.serialize()
       }
     })
   }
@@ -54,7 +50,9 @@ export class BooksController {
     await Book.update(book, this.bookParams(req));
   
     res.status(200).send({
-      message: `update: ${book.title}`
+      data: {
+        book: book.serialize()
+      }
     });
   }
 
@@ -63,18 +61,22 @@ export class BooksController {
     const book: Book = await Book.findOne(id);
 
     res.status(200).send({
-      message: `get book: ${book.title}`
+      data: {
+        book: book.serialize()
+      }
     })
   }
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
     let book: Book = await Book.findOne(id);
-    
+
     await book.remove();
 
     res.status(200).send({
-      message: `book destoryed: ${id}`
+      data: {
+        book: book.serialize()
+      }
     });
   }
 

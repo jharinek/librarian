@@ -20,7 +20,9 @@ export class AuthorsController {
     }
 
     res.status(200).send({
-      message: `OK ${authors.length}`
+      data: {
+        authors: authors.map(author => author.serialize())
+      }
     });
   }
 
@@ -30,7 +32,9 @@ export class AuthorsController {
     await newAuthor.save();
 
     res.status(200).send({
-      message: "OK"
+      data: {
+        author: newAuthor.serialize()
+      }
     });
   }
 
@@ -41,7 +45,9 @@ export class AuthorsController {
     await Author.update(author, this.authorParams(req));
     
     res.status(200).send({
-      message: `update: ${author.firstName}`
+      data: {
+        author: author.serialize()
+      }
     });
   }
 
@@ -50,7 +56,9 @@ export class AuthorsController {
     const author: Author = await Author.findOne(id);
 
     res.status(200).send({
-      message: `get: ${author.firstName}`
+      data: {
+        author: author.serialize()
+      }
     });
   }
 
@@ -61,7 +69,9 @@ export class AuthorsController {
     await author.remove();
 
     res.status(200).send({
-      message: `destroy ${id}`
+      data: {
+        author: author.serialize()
+      }
     });
   }
 

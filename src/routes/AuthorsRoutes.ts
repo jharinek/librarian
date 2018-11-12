@@ -9,8 +9,10 @@ class AuthorsRoutes {
   }
 
   private config(): void {
-    this.router.get("/", (req: express.Request, res: express.Response) => 
+    this.router.get("/", (req: express.Request, res: express.Response, next: Function) => 
       authorsController.index(req, res)
+        .then(() => next())
+        .catch(err => next(err))
     );
 
     this.router.post("/", (req: express.Request, res: express.Response, next: Function) => 
@@ -19,16 +21,22 @@ class AuthorsRoutes {
         .catch(err => next(err))
     );
 
-    this.router.patch("/:id", (req: express.Request, res: express.Response) => 
+    this.router.patch("/:id", (req: express.Request, res: express.Response, next: Function) => 
       authorsController.update(req, res)
+        .then(() => next())
+        .catch(err => next(err))
     );
 
-    this.router.get("/:id", (req: express.Request, res: express.Response) => 
+    this.router.get("/:id", (req: express.Request, res: express.Response, next: Function) => 
       authorsController.show(req, res)
+        .then(() => next())
+        .catch(err => next(err))
     );
 
-    this.router.delete("/:id", (req: express.Request, res: express.Response) => 
+    this.router.delete("/:id", (req: express.Request, res: express.Response, next: Function) => 
       authorsController.destroy(req, res)
+        .then(() => next())
+        .catch(err => next(err))
     );
   }
 }

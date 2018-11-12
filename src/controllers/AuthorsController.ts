@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
 import { Author } from "../models/Author";
+import {getConnection} from "typeorm";
 
 export class AuthorsController {
+  public async index(req: Request, res: Response) {
+    const authors: Author[] = await Author.find();
 
-  public index(req: Request, res: Response) {
     res.status(200).send({
-      message: "OK"
+      message: `OK ${authors.length}`
     });
   }
 
   public async create(req: Request, res: Response) {
-    // TODO: whitelist params and assign them as an object
     const authorParams = req.body.author
     const newAuthor: Author = new Author();
 
@@ -24,22 +24,38 @@ export class AuthorsController {
     });
   }
 
-  public update(req: Request, res: Response) {
-    let id: number = req.params.id;
+  public async update(req: Request, res: Response) {
+    const authorParams = req.body.author
+    const id: number = req.params.id;
+
+    await getConnection()
+      .createQueryBuilder()
+      .update(Author)
+      .set(authorParams)
+      .where("id = :id", { id: id })
+      .execute();
+
+    const author: Author = await Author.findOne(id);
+
     res.status(200).send({
-      message: `update: ${id}`
+      message: `update: ${author.firstName}`
     });
   }
 
-  public show(req: Request, res: Response) {
-    let id: number = req.params.id;
+  public async show(req: Request, res: Response) {
+    const id: number = req.params.id;
+    const author: Author = await Author.findOne(id);
+
     res.status(200).send({
-      message: `get: ${id}`
+      message: `get: ${author.firstName}`
     });
   }
 
-  public destroy(req: Request, res: Response) {
-    let id: number = req.params.id;
+  public async destroy(req: Request, res: Response) {
+    const id: number = req.params.id;
+    
+    await Author.delete(id);
+
     res.status(200).send({
       message: `destroy ${id}`
     });

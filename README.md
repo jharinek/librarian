@@ -5,6 +5,7 @@ Sample node.js app using Typescript, Express.js and PostgreSQL with TypeORM.
 ## Installation
 
 Install dependencies: `npm install`
+
 Run server: `npm start`
 
 ## License 

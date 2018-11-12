@@ -3,7 +3,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import { authorsRoutes } from "./routes/AuthorsRoutes";
 import { booksRoutes } from "./routes/BooksRoutes";
-import { searchRoutes } from "./routes/SearchRoutes";
 
 class App {
   public app: express.Application;
@@ -18,7 +17,6 @@ class App {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use("/api/authors", authorsRoutes);
     this.app.use("/api/books", booksRoutes);
-    this.app.use("/api/search", searchRoutes);
   }
 }
 

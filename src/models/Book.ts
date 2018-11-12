@@ -5,7 +5,7 @@ import { Author } from "./Author";
 export class Book extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
-  @Column() name: string;
+  @Column() title: string;
   @Column() description: string;
 
   @ManyToOne(type => Author, author => author.books)

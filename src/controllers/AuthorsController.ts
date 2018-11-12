@@ -64,7 +64,7 @@ export class AuthorsController {
     });
   }
 
-  private authorParams(req: Request): Object {
+  private authorParams(req: Request): {firstName: string, lastName: string} {
     const authorParams = req.body.author
 
     return {

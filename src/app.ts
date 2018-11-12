@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express from "express";
 import bodyParser from "body-parser";
 import { authorsRoutes } from "./routes/AuthorsRoutes";
@@ -14,8 +15,7 @@ class App {
 
   private config(): void {
     this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: false }));
-
+    this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use("/api/authors", authorsRoutes);
     this.app.use("/api/books", booksRoutes);
     this.app.use("/api/search", searchRoutes);

@@ -1,4 +1,5 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import { Author } from "./Author";
 
 @Entity()
 export class Book extends BaseEntity {
@@ -6,6 +7,10 @@ export class Book extends BaseEntity {
 
   @Column() name: string;
   @Column() description: string;
+
+  @ManyToOne(type => Author, author => author.books)
+  author: Author;
+
   @CreateDateColumn() createdAt: Date;
   @UpdateDateColumn() updatedAt: Date;
 }

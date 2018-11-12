@@ -36,7 +36,16 @@ export class BooksController {
     await newBook.save;
 
     res.status(200).send({
-      message: `Book created: ${newBook.id}`
+      data: {
+        book: {
+          title: newBook.title,
+          description: newBook.description,
+          author: {
+            firstName: newBook.author.firstName,
+            lastName: newBook.author.lastName
+          }
+        }
+      }
     })
   }
 

@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-ts": "tsc",
     "start": "npm run serve",
-    "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
+    "serve": "node --require ts-node/register dist/server.js",
+    "watch-node": "nodemon --exec ts-node src/server.ts",
     "watch-ts": "tsc -w"
   },
   "author": "Jozef Harinek",

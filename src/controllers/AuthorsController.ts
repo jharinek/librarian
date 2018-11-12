@@ -1,13 +1,24 @@
 import { Request, Response } from "express";
+import { getRepository } from "typeorm";
+import { Author } from "../models/Author";
 
 export class AuthorsController {
+
   public index(req: Request, res: Response) {
     res.status(200).send({
       message: "OK"
     });
   }
 
-  public create(req: Request, res: Response) {
+  public async create(req: Request, res: Response) {
+    // TODO: whitelist params and assign them as an object
+    const authorParams = req.body.author
+    const newAuthor: Author = new Author();
+
+    newAuthor.firstName = authorParams.firstName;
+    newAuthor.lastName = authorParams.lastName;
+    await newAuthor.save();
+
     res.status(200).send({
       message: "OK"
     });

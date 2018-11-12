@@ -13,8 +13,10 @@ class AuthorsRoutes {
       authorsController.index(req, res)
     );
 
-    this.router.post("/:id", (req: express.Request, res: express.Response) => 
+    this.router.post("/", (req: express.Request, res: express.Response, next: Function) => 
       authorsController.create(req, res)
+        .then(() => next())
+        .catch(err => next(err))
     );
 
     this.router.patch("/:id", (req: express.Request, res: express.Response) => 

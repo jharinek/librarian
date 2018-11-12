@@ -56,8 +56,9 @@ export class AuthorsController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
+    const author: Author = await Author.findOne(id);
     
-    await Author.delete(id);
+    await author.remove();
 
     res.status(200).send({
       message: `destroy ${id}`

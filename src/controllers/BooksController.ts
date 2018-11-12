@@ -69,8 +69,9 @@ export class BooksController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-
-    await Book.delete(id);
+    let book: Book = await Book.findOne(id);
+    
+    await book.remove();
 
     res.status(200).send({
       message: `book destoryed: ${id}`

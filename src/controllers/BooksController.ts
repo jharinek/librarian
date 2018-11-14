@@ -45,7 +45,7 @@ export class BooksController {
 
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
-    const book: Book = await Book.findOne(id);
+    const book: Book = await Book.findOne(id, {relations: ["author"]});
 
     await Book.update(book, this.bookParams(req));
   
@@ -58,7 +58,7 @@ export class BooksController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id
-    const book: Book = await Book.findOne(id);
+    const book: Book = await Book.findOne(id, {relations: ["author"]});
 
     res.status(200).send({
       data: {
@@ -69,7 +69,7 @@ export class BooksController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-    let book: Book = await Book.findOne(id);
+    let book: Book = await Book.findOne(id, {relations: ["author"]});
 
     await book.remove();
 

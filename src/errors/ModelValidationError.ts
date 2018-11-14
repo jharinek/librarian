@@ -14,7 +14,7 @@ export class ModelValidationError extends Error {
       let errorMessage: string = "";
 
       for(let key in error.constraints){
-        errorMessage += `${error.constraints[key]}, `;
+        errorMessage += `${error.constraints[key]}`;
       }
 
       return errorMessage

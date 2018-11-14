@@ -22,7 +22,7 @@ class App {
     
     this.app.use((err: ModelValidationError, req: Request, res: Response, next: Function) => {
       if(err instanceof ModelValidationError){
-        res.status(200).send({
+        res.status(422).send({
           data: null,
           errors: err.errorMessages()
         });

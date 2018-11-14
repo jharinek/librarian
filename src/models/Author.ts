@@ -44,7 +44,7 @@ export class Author extends BaseEntity {
       id: this.id,
       firstName: this.firstName,
       lastName: this.lastName,
-      books: this.books.map(book => {
+      books: this.books && this.books.map(book => {
         return {
           id: book.id,
           title: book.title,

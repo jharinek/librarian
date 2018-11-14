@@ -84,9 +84,9 @@ export class BooksController {
     const bookObject = req.body.book
 
     return {
-      title: bookObject["title"], 
-      description: bookObject["description"],
-      authorId: bookObject["authorId"]
+      title: bookObject && bookObject["title"], 
+      description: bookObject && bookObject["description"],
+      authorId: bookObject && bookObject["authorId"]
     }
   }
 }

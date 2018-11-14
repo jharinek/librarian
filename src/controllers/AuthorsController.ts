@@ -79,8 +79,8 @@ export class AuthorsController {
     const authorParams = req.body.author
 
     return {
-      firstName: authorParams["firstName"], 
-      lastName: authorParams["lastName"]
+      firstName: authorParams &&  authorParams["firstName"], 
+      lastName: authorParams && authorParams["lastName"]
     }
   }
 }

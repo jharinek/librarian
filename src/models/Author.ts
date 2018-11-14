@@ -1,20 +1,42 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, BeforeInsert, BeforeUpdate } from "typeorm";
 import { Book } from './Book';
+import { IsNotEmpty, validate, ValidationError } from "class-validator";
+import { ModelValidationError } from "../errors/ModelValidationError";
 
 @Entity()
 export class Author extends BaseEntity {
-  @PrimaryGeneratedColumn() id: number;
+  public errors: ValidationError[];
 
-  @Column() firstName: string;
-  @Column() lastName: string;
+  @PrimaryGeneratedColumn() 
+  id: number;
+
+  @Column()
+  @IsNotEmpty() 
+  firstName: string;
+  
+  @Column()
+  @IsNotEmpty() 
+  lastName: string;
   
   @OneToMany(type => Book, book => book.author, {
     eager: true
   })
   books: Book[];
 
-  @CreateDateColumn() createdAt: Date;
-  @UpdateDateColumn() updatedAt: Date;
+  @CreateDateColumn() 
+  createdAt: Date;
+  @UpdateDateColumn() 
+  updatedAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async checkValidations() {
+    this.errors = await(validate(this));
+    
+    if(this.errors.length > 0) {
+      throw new ModelValidationError("Validation failed!", this.errors);
+    }
+  }
 
   public serialize(): Object {
     return {

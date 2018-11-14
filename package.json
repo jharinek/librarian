@@ -4,6 +4,7 @@
   "description": "Simple API server as a node.js, express with typescript example",
   "main": "dist/server.js",
   "scripts": {
+    "test": "mocha --require ts-node/register test/**/*.ts",
     "build-ts": "tsc",
     "start": "ts-node src/server.ts",
     "watch-node": "nodemon --exec ts-node src/server.ts",

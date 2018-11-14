@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Author } from "../models/Author";
 import { getConnection } from "typeorm";
+import { RecordNotFound } from "../errors/RecordNotFound";
 
 export class AuthorsController {
   public async index(req: Request, res: Response) {
@@ -57,7 +58,11 @@ export class AuthorsController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id);
+    const author: Author = await Author.findOne(id)
+
+    if(!author){
+      throw new RecordNotFound(id);
+    }
 
     res.status(200).send({
       data: {

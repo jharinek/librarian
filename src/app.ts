@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { authorsRoutes } from "./routes/AuthorsRoutes";
 import { booksRoutes } from "./routes/BooksRoutes";
 import { ModelValidationError } from "./errors/ModelValidationError";
+import { RecordNotFound } from "./errors/RecordNotFound";
 
 class App {
   public app: express.Application;
@@ -29,6 +30,17 @@ class App {
         next(err);
       }
       
+    });
+
+    this.app.use((err: RecordNotFound, req: Request, res: Response, next: Function) => {
+      if(err instanceof RecordNotFound){
+        res.status(404).send({
+          data: null,
+          errors: [err.message]
+        });
+      } else {
+        next(err);
+      }
     });
 
     this.app.use((err: Error, req: Request, res: Response, next: Function) => {

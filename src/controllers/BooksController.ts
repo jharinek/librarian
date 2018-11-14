@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { Book } from "../models/Book";
 import { Author } from "../models/Author";
-import { getConnection, Like, createQueryBuilder } from "typeorm";
+import { getConnection } from "typeorm";
+import { RecordNotFound } from "../errors/RecordNotFound";
 
 export class BooksController {
   public async index(req: Request, res: Response) {
@@ -65,6 +66,10 @@ export class BooksController {
   public async show(req: Request, res: Response) {
     const id: number = req.params.id
     const book: Book = await Book.findOne(id, {relations: ["author"]});
+    
+    if(!book){
+      throw new RecordNotFound(id);
+    }
 
     res.status(200).send({
       data: {

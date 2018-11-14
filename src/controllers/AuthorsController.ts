@@ -41,8 +41,12 @@ export class AuthorsController {
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
     const author: Author = await Author.findOne(id);
+    const updateParams = this.authorParams(req);
     
-    await Author.update(author, this.authorParams(req));
+    author.firstName = updateParams.firstName || author.firstName;
+    author.lastName = updateParams.lastName || author.lastName;
+    
+    await author.save();
     
     res.status(200).send({
       data: {

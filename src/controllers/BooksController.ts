@@ -46,8 +46,14 @@ export class BooksController {
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
     const book: Book = await Book.findOne(id, {relations: ["author"]});
+    const updateParams = this.bookParams(req);
+    const author: Author = await Author.findOne(updateParams["authorId"]); 
+    
+    book.title = updateParams.title || book.title;
+    book.description = updateParams.description || book.description;
+    book.author = author || book.author;
 
-    await Book.update(book, this.bookParams(req));
+    await book.save();
   
     res.status(200).send({
       data: {

@@ -25,6 +25,7 @@ export class Author extends BaseEntity {
 
   @CreateDateColumn() 
   createdAt: Date;
+  
   @UpdateDateColumn() 
   updatedAt: Date;
 

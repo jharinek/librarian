@@ -3,8 +3,9 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { authorsRoutes } from "./routes/AuthorsRoutes";
 import { booksRoutes } from "./routes/BooksRoutes";
-import { ModelValidationError } from "./errors/ModelValidationError";
-import { RecordNotFound } from "./errors/RecordNotFound";
+import { validationErrorProcessor } from "./middlewares/ValidationErrorProcessor";
+import { recordNotFoundProcessor } from "./middlewares/RecordNotFoundProcessor";
+import { baseErrorProcessor } from "./middlewares/BaseErrorProcessor";
 
 class App {
   public app: express.Application;
@@ -17,40 +18,13 @@ class App {
   private config(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    
     this.app.use("/api/authors", authorsRoutes);
     this.app.use("/api/books", booksRoutes);
     
-    this.app.use((err: ModelValidationError, req: Request, res: Response, next: Function) => {
-      if(err instanceof ModelValidationError){
-        res.status(422).send({
-          data: null,
-          errors: err.errorMessages()
-        });
-      } else{
-        next(err);
-      }
-      
-    });
-
-    this.app.use((err: RecordNotFound, req: Request, res: Response, next: Function) => {
-      if(err instanceof RecordNotFound){
-        res.status(404).send({
-          data: null,
-          errors: [err.message]
-        });
-      } else {
-        next(err);
-      }
-    });
-
-    this.app.use((err: Error, req: Request, res: Response, next: Function) => {
-      console.log(err.stack);
-
-      res.status(500).send({
-        data: null,
-        errors: ["Server encountered an error."]
-      });
-    });
+    this.app.use(validationErrorProcessor);
+    this.app.use(recordNotFoundProcessor);
+    this.app.use(baseErrorProcessor);
   }
 }
 

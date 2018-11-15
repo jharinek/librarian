@@ -32,7 +32,12 @@ export class BooksController {
   public async create(req: Request, res: Response) {
     const params = this.bookParams(req);
     const newBook: Book = Book.create(params);
-    const author: Author = await Author.findOne(params["authorId"]);    
+    const author: Author = await Author.findOne(params["authorId"]);  
+    
+    if(!author){
+      throw new RecordNotFound(params["authorId"])
+    }
+
     newBook.author = author;
     
     await newBook.save();

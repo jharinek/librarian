@@ -64,11 +64,14 @@ describe("Author routes", () => {
         "author[firstName]": "John",
         "author[lastName]": "Doe" 
       })
-        .then(res => {
+        .then(async res => {
           let authorData = res.body.data.author;
   
           expect(authorData.firstName).to.eql("John");
           expect(authorData.lastName).to.eql("Doe");
+
+          let authorFromDb = await Author.findOne({firstName: "John", lastName: "Doe"});
+          expect(authorFromDb.firstName).to.eql("John");
         })
     })
   
@@ -120,11 +123,14 @@ describe("Author routes", () => {
       return chai.request(server).patch(`/api/authors/${author.id}`).type("form").send({
         "author[firstName]": "John"
       })
-        .then(res => {
+        .then(async res => {
           let authorData = res.body.data.author;
   
           expect(authorData.firstName).to.eql("John");
           expect(authorData.lastName).to.eql("Queen");
+
+          let authorFromDb = await Author.findOne({firstName: "John", lastName: "Queen"});
+          expect(authorFromDb.firstName).to.eql("John");
         })
     })
   })
@@ -140,11 +146,14 @@ describe("Author routes", () => {
     it("Deletes author with given id", () => {
   
       return chai.request(server).del(`/api/authors/${author.id}`)
-        .then(res => {
+        .then(async res => {
           let authorData = res.body.data.author;
   
           expect(authorData.firstName).to.eql("Ernest");
           expect(authorData.lastName).to.eql("Hemingway");
+
+          let authorFromDb = await Author.findOne({firstName: "Ernest", lastName: "Hemingway"})
+          expect(authorFromDb).to.eql(undefined);
         })
     })
   })  

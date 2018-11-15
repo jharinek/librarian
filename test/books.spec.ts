@@ -71,13 +71,16 @@ describe("Book routes", () => {
         "book[description]": "A firsthand account of the brutal conditions of the Spanish Civil War.",
         "book[authorId]": author.id
       })
-        .then(res => {
+        .then(async res => {
           let bookData = res.body.data.book;
   
           expect(bookData.title).to.eql("Homage to Catalonia");
           expect(bookData.description).to.eql("A firsthand account of the brutal conditions of the Spanish Civil War.");
           expect(bookData.author.firstName).to.eql("George");
           expect(bookData.author.lastName).to.eql("Orwell");
+
+          let bookFromDb = await Book.findOne({title: "Homage to Catalonia"})
+          expect(bookFromDb.title).to.eql("Homage to Catalonia");
         })
     })
   
@@ -132,11 +135,14 @@ describe("Book routes", () => {
       return chai.request(server).patch(`/api/books/${book.id}`).type("form").send({
         "book[description]": "Updated via API"
       })
-        .then(res => {
+        .then(async res => {
           let bookData = res.body.data.book;
-  
-          expect(bookData.description).to.eql("Updated via API");
+          
           expect(bookData.title).to.eql("Api handbook");
+          expect(bookData.description).to.eql("Updated via API");
+
+          let bookFromDb = await Book.findOne({title: "Api handbook"})
+          expect(bookFromDb.title).to.eql("Api handbook");
         })
     })
   })
@@ -154,11 +160,14 @@ describe("Book routes", () => {
     it("Deletes book with given id", () => {
   
       return chai.request(server).del(`/api/books/${book.id}`)
-        .then(res => {
+        .then(async res => {
           let bookData = res.body.data.book;
   
           expect(bookData.title).to.eql("Trash book");
           expect(bookData.description).to.eql("Created via API");
+
+          let bookFromDb = await Book.findOne({title: "Trash book"})
+          expect(bookFromDb).to.eql(undefined);
         })
     })
   })  

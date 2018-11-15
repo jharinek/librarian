@@ -1,10 +1,15 @@
-import { createConnection } from "typeorm";
+import { createConnection, getConnectionOptions } from "typeorm";
 import app from "./app";
 const PORT = process.env.PORT || 3000
+const ENV = process.env.NODE_ENV || "development"
 
-createConnection().then(async connection => {}).catch(error => console.log(`TypeORM connection error: ${error}`));
+export const startServer = async () => {
+  const connectionOptions = await getConnectionOptions(ENV);
+  await createConnection({...connectionOptions, name: "default"});
 
-app.listen(PORT, () => {
-  console.log("Express server listening on port " + PORT);
-});
+  app.listen(PORT, () => {
+    console.log("Express server listening on port " + PORT);
+  });
+}
 
+startServer();

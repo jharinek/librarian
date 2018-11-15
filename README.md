@@ -8,6 +8,8 @@ Install dependencies: `npm install`
 
 Run server: `npm start`
 
+Run tests: `npm run test`
+
 ## License 
 
 The MIT License (MIT)

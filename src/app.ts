@@ -7,6 +7,7 @@ import { booksRoutes } from "./routes/BooksRoutes";
 
 import { baseErrorProcessor } from "./middlewares/BaseErrorProcessor";
 import { recordNotFoundProcessor } from "./middlewares/RecordNotFoundProcessor";
+import { relatedRecordsFoundProcessor } from "./middlewares/RelatedRecordsFoundProcessor";
 import { validationErrorProcessor } from "./middlewares/ValidationErrorProcessor";
 
 class App {
@@ -26,6 +27,7 @@ class App {
     
     this.app.use(validationErrorProcessor);
     this.app.use(recordNotFoundProcessor);
+    this.app.use(relatedRecordsFoundProcessor);
     this.app.use(baseErrorProcessor);
   }
 }

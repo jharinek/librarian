@@ -1,9 +1,10 @@
 import { Book } from './Book';
 
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, BeforeInsert, BeforeUpdate, JoinTable } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, BeforeInsert, BeforeUpdate, JoinTable, BeforeRemove } from "typeorm";
 import { IsNotEmpty, validate, ValidationError } from "class-validator";
 
 import { ModelValidationError } from "../errors/ModelValidationError";
+import { RelatedRecordsFound } from "../errors/RelatedRecordsFound";
 
 @Entity()
 export class Author extends BaseEntity {
@@ -36,6 +37,13 @@ export class Author extends BaseEntity {
     
     if(this.errors.length > 0) {
       throw new ModelValidationError("Validation failed!", this.errors);
+    }
+  }
+
+  @BeforeRemove()
+  checkRelatedBooks() {
+    if(this.books.length > 0){
+      throw new RelatedRecordsFound("Author", "Book");
     }
   }
 

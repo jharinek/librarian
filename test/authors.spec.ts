@@ -149,10 +149,15 @@ describe("Author routes", () => {
   
   describe("DELETE /authors/:id", async () => {
     let author: Author
+    let authorWithBook: Author
   
     before(async () => {
       author = Author.create({firstName: "Ernest", lastName: "Hemingway"});
       await author.save();
+
+      authorWithBook = Author.create({firstName: "James", lastName: "Clear"});
+      await authorWithBook.save();
+      await Book.create({title: "The Book", description: "This is an importatnt test book", authors: [authorWithBook]}).save();
     });
   
     it("Deletes author with given id", () => {
@@ -167,6 +172,14 @@ describe("Author routes", () => {
 
           let authorFromDb = await Author.findOne({firstName: "Ernest", lastName: "Hemingway"})
           expect(authorFromDb).to.eql(undefined);
+        })
+    })
+
+    it("Returns an error when trying to delete author with related books", () => {
+      return chai.request(server).del(`/api/authors/${authorWithBook.id}`)
+        .then(async res => {          
+          expect(res.status).to.eql(422);
+          expect("Author has related instances of Book and can't be deleted! Resolve this first!").to.be.oneOf(res.body.errors);
         })
     })
   })  

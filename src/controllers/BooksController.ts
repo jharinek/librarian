@@ -36,9 +36,11 @@ export class BooksController {
     let authors: Author[] 
     
     if(params["authorIds"]){
-      authors = await Author.findByIds(params["authorIds"]).catch(() => { 
+      authors = await Author.findByIds(params["authorIds"])
+      
+      if(authors.length === 0){
         throw new RecordNotFound(params["authorIds"]);
-      });  
+      }
     }
     
     newBook.authors = authors;

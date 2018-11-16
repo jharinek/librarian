@@ -58,6 +58,10 @@ export class BooksController {
     const updateParams = this.bookParams(req);
     let authors: Author[]
     
+    if(!book){
+      throw new RecordNotFound("Book", id);
+    }
+
     if(updateParams["authorIds"]){
       authors = await Author.findByIds(updateParams["authorIds"]);
       
@@ -98,6 +102,10 @@ export class BooksController {
     const id: number = req.params.id;
     let book: Book = await Book.findOne(id, {relations: ["authors"]});
 
+    if(!book){
+      throw new RecordNotFound("Book", id);
+    }
+    
     await book.remove();
 
     res.status(200).send({

@@ -45,6 +45,10 @@ export class AuthorsController {
     const author: Author = await Author.findOne(id, { relations: ["books"] });
     const updateParams = this.authorParams(req);
     
+    if(!author){
+      throw new RecordNotFound("Author", id);
+    }
+
     author.firstName = updateParams.firstName || author.firstName;
     author.lastName = updateParams.lastName || author.lastName;
     
@@ -75,6 +79,10 @@ export class AuthorsController {
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
     const author: Author = await Author.findOne(id, { relations: ["books"] });
+    
+    if(!author){
+      throw new RecordNotFound("Author", id);
+    }
     
     await author.remove();
 

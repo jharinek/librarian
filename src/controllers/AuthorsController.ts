@@ -44,12 +44,8 @@ export class AuthorsController {
 
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id, { relations: ["books"] });
+    const author: Author = await this.loadAuthor(id);
     const updateParams = this.authorParams(req);
-    
-    if(!author){
-      throw new RecordNotFound("Author", id);
-    }
 
     author.firstName = updateParams.firstName || author.firstName;
     author.lastName = updateParams.lastName || author.lastName;
@@ -65,11 +61,7 @@ export class AuthorsController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id, { relations: ["books"] })
-
-    if(!author){
-      throw new RecordNotFound("Author", id);
-    }
+    const author: Author = await this.loadAuthor(id);
 
     res.status(200).send({
       data: {
@@ -80,11 +72,7 @@ export class AuthorsController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id, { relations: ["books"] });
-    
-    if(!author){
-      throw new RecordNotFound("Author", id);
-    }
+    const author: Author = await this.loadAuthor(id);
 
     await author.remove();
 
@@ -102,6 +90,15 @@ export class AuthorsController {
       firstName: authorParams &&  authorParams["firstName"], 
       lastName: authorParams && authorParams["lastName"]
     }
+  }
+
+  private async loadAuthor(id: number): Promise<Author> {
+    let author: Author = await Author.findOne(id, { relations: ["books"] });
+    if(!author){
+      throw new RecordNotFound("Author", id);
+    }
+
+    return author;
   }
 }
 

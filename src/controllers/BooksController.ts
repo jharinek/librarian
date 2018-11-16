@@ -34,15 +34,8 @@ export class BooksController {
   public async create(req: Request, res: Response) {
     const createParams = this.bookParams(req);
     const newBook: Book = Book.create(createParams);
-    let authors: Author[] 
+    const authors: Author[] = await this.loadAuthors(createParams["authorIds"]);
     
-    if(createParams["authorIds"]){
-      authors = await Author.findByIds(createParams["authorIds"])
-      
-      if(authors.length === 0){
-        throw new RecordNotFound("Author", createParams["authorIds"]);
-      }
-    }
     newBook.authors = authors;
     
     await newBook.save();
@@ -56,21 +49,9 @@ export class BooksController {
 
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
-    const book: Book = await Book.findOne(id, {relations: ["authors"]});
+    const book: Book = await this.loadBook(id);
     const updateParams = this.bookParams(req);
-    let authors: Author[]
-    
-    if(!book){
-      throw new RecordNotFound("Book", id);
-    }
-
-    if(updateParams["authorIds"]){
-      authors = await Author.findByIds(updateParams["authorIds"]);
-      
-      if(authors.length === 0){
-        throw new RecordNotFound("Author", updateParams["authorIds"]);
-      }
-    }
+    const authors: Author[] = await this.loadAuthors(updateParams["authorIds"]);
     
     book.title = updateParams.title || book.title;
     book.description = updateParams.description || book.description;
@@ -87,11 +68,7 @@ export class BooksController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id
-    const book: Book = await Book.findOne(id, {relations: ["authors"]});
-    
-    if(!book){
-      throw new RecordNotFound("Book", id);
-    }
+    const book: Book = await this.loadBook(id);
 
     res.status(200).send({
       data: {
@@ -102,11 +79,7 @@ export class BooksController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-    let book: Book = await Book.findOne(id, {relations: ["authors"]});
-
-    if(!book){
-      throw new RecordNotFound("Book", id);
-    }
+    const book: Book = await this.loadBook(id);
 
     await book.remove();
 
@@ -125,6 +98,29 @@ export class BooksController {
       description: bookObject && bookObject["description"],
       authorIds: bookObject && bookObject["authorIds"] && JSON.parse(bookObject["authorIds"])
     }
+  }
+
+  private async loadBook(id: number): Promise<Book> {
+    let book: Book = await Book.findOne(id, {relations: ["authors"]});
+    if(!book){
+      throw new RecordNotFound("Book", id);
+    }
+
+    return book;
+  } 
+
+  private async loadAuthors(ids: number[]): Promise<Author[]> {
+    if(ids){
+      const authors: Author[] = await Author.findByIds(ids);
+      
+      if(authors.length === 0){
+        throw new RecordNotFound("Author", ids);
+      }
+
+      return authors;
+    }
+
+    return undefined;
   }
 }
 

@@ -1,6 +1,6 @@
 export class RecordNotFound extends Error {
-  constructor(id: number | number[]){
-    super(`Record with id: ${id} was not found!`);
+  constructor(modelName: string, id: number | number[]){
+    super(`${modelName} with id ${id} was not found!`);
     Object.setPrototypeOf(this, new.target.prototype)
   }
 }

@@ -62,7 +62,7 @@ export class AuthorsController {
     const author: Author = await Author.findOne(id, { relations: ["books"] })
 
     if(!author){
-      throw new RecordNotFound(id);
+      throw new RecordNotFound("Author", id);
     }
 
     res.status(200).send({

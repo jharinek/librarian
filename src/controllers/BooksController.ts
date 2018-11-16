@@ -38,7 +38,7 @@ export class BooksController {
       authors = await Author.findByIds(createParams["authorIds"])
       
       if(authors.length === 0){
-        throw new RecordNotFound(createParams["authorIds"]);
+        throw new RecordNotFound("Author", createParams["authorIds"]);
       }
     }
     newBook.authors = authors;
@@ -62,7 +62,7 @@ export class BooksController {
       authors = await Author.findByIds(updateParams["authorIds"]);
       
       if(authors.length === 0){
-        throw new RecordNotFound(updateParams["authorIds"]);
+        throw new RecordNotFound("Author", updateParams["authorIds"]);
       }
     }
     
@@ -84,7 +84,7 @@ export class BooksController {
     const book: Book = await Book.findOne(id, {relations: ["authors"]});
     
     if(!book){
-      throw new RecordNotFound(id);
+      throw new RecordNotFound("Book", id);
     }
 
     res.status(200).send({

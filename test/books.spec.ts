@@ -1,8 +1,9 @@
 import "./setup";
-import chai from "chai";
-import chaiHttp from "chai-http";
 import { Author } from "../src/models/Author";
 import { Book } from "../src/models/Book";
+
+import chai from "chai";
+import chaiHttp from "chai-http";
 import server from "./setup";
 import { getConnection } from "typeorm";
 

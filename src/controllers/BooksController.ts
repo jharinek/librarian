@@ -1,7 +1,9 @@
-import { Request, Response } from "express";
-import { Book } from "../models/Book";
 import { Author } from "../models/Author";
+import { Book } from "../models/Book";
+
 import { getConnection } from "typeorm";
+import { Request, Response } from "express";
+
 import { RecordNotFound } from "../errors/RecordNotFound";
 
 export class BooksController {
@@ -105,7 +107,7 @@ export class BooksController {
     if(!book){
       throw new RecordNotFound("Book", id);
     }
-    
+
     await book.remove();
 
     res.status(200).send({

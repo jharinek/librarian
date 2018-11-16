@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
+
 import { authorsRoutes } from "./routes/AuthorsRoutes";
 import { booksRoutes } from "./routes/BooksRoutes";
-import { validationErrorProcessor } from "./middlewares/ValidationErrorProcessor";
-import { recordNotFoundProcessor } from "./middlewares/RecordNotFoundProcessor";
+
 import { baseErrorProcessor } from "./middlewares/BaseErrorProcessor";
+import { recordNotFoundProcessor } from "./middlewares/RecordNotFoundProcessor";
+import { validationErrorProcessor } from "./middlewares/ValidationErrorProcessor";
 
 class App {
   public app: express.Application;

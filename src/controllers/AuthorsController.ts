@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
 import { Author } from "../models/Author";
+
 import { getConnection } from "typeorm";
+import { Request, Response } from "express";
+
 import { RecordNotFound } from "../errors/RecordNotFound";
 
 export class AuthorsController {
@@ -83,7 +85,7 @@ export class AuthorsController {
     if(!author){
       throw new RecordNotFound("Author", id);
     }
-    
+
     await author.remove();
 
     res.status(200).send({

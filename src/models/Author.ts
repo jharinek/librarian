@@ -1,6 +1,8 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, BeforeInsert, BeforeUpdate, JoinTable } from "typeorm";
 import { Book } from './Book';
+
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, BeforeInsert, BeforeUpdate, JoinTable } from "typeorm";
 import { IsNotEmpty, validate, ValidationError } from "class-validator";
+
 import { ModelValidationError } from "../errors/ModelValidationError";
 
 @Entity()

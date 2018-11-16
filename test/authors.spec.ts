@@ -39,7 +39,8 @@ describe("Author routes", () => {
         .then(res => {
           let authorsData = res.body.data.authors;
           let jamesData = authorsData[0];
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorsData.length).to.eql(2);
           expect(jamesData.firstName).to.eql("James");
           expect(jamesData.lastName).to.eql("Cook");
@@ -54,7 +55,8 @@ describe("Author routes", () => {
         .then(res => {
           let authorsData = res.body.data.authors;
           let jamesData = authorsData[0];
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorsData.length).to.eql(1);
           expect(jamesData.firstName).to.eql("James");
           expect(jamesData.lastName).to.eql("Cook");
@@ -72,7 +74,8 @@ describe("Author routes", () => {
       })
         .then(async res => {
           let authorData = res.body.data.author;
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorData.firstName).to.eql("John");
           expect(authorData.lastName).to.eql("Doe");
 
@@ -107,7 +110,8 @@ describe("Author routes", () => {
       return chai.request(server).get(`/api/authors/${author.id}`)
         .then(res => {
           let authorData = res.body.data.author;
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorData.firstName).to.eql("Mike");
           expect(authorData.lastName).to.eql("Well");
           expect(authorData.books[0].title).to.eql("Another Book");
@@ -131,7 +135,8 @@ describe("Author routes", () => {
       })
         .then(async res => {
           let authorData = res.body.data.author;
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorData.firstName).to.eql("John");
           expect(authorData.lastName).to.eql("Queen");
 
@@ -154,7 +159,8 @@ describe("Author routes", () => {
       return chai.request(server).del(`/api/authors/${author.id}`)
         .then(async res => {
           let authorData = res.body.data.author;
-  
+          
+          expect(res.status).to.eql(200);
           expect(authorData.firstName).to.eql("Ernest");
           expect(authorData.lastName).to.eql("Hemingway");
 

@@ -41,7 +41,8 @@ describe("Book routes", () => {
       return chai.request(server).get('/api/books')
         .then(res => {
           let booksData = res.body.data.books;
-  
+          
+          expect(res.status).to.eql(200);
           expect(booksData.length).to.eql(2);
           expect(booksData[0].title).to.eql("Lord of the Rings");
           expect(booksData[0].description).to.eql("This is awesome!");
@@ -59,7 +60,8 @@ describe("Book routes", () => {
       return chai.request(server).get('/api/books?q=ring')
         .then(res => {
           let booksData = res.body.data.books;
-  
+          
+          expect(res.status).to.eql(200);
           expect(booksData.length).to.eql(1);
           expect(booksData[0].title).to.eql("Lord of the Rings");
           expect(booksData[0].description).to.eql("This is awesome!");
@@ -80,7 +82,8 @@ describe("Book routes", () => {
       })
         .then(async res => {
           let bookData = res.body.data.book;
-  
+          
+          expect(res.status).to.eql(200);
           expect(bookData.title).to.eql("Homage to Catalonia");
           expect(bookData.description).to.eql("A firsthand account of the brutal conditions of the Spanish Civil War.");
           expect(bookData.authors[0].firstName).to.eql("George");
@@ -121,7 +124,8 @@ describe("Book routes", () => {
       return chai.request(server).get(`/api/books/${book.id}`)
         .then(res => {
           let bookData = res.body.data.book;
-  
+          
+          expect(res.status).to.eql(200);
           expect(bookData.title).to.eql("A Book");
           expect(bookData.description).to.eql("This is not importatnt test book");
           expect(bookData.authors[0].firstName).to.eql("Mike");
@@ -148,6 +152,7 @@ describe("Book routes", () => {
         .then(async res => {
           let bookData = res.body.data.book;
           
+          expect(res.status).to.eql(200);
           expect(bookData.title).to.eql("Api handbook");
           expect(bookData.description).to.eql("Updated via API");
 
@@ -172,7 +177,8 @@ describe("Book routes", () => {
       return chai.request(server).del(`/api/books/${book.id}`)
         .then(async res => {
           let bookData = res.body.data.book;
-  
+          
+          expect(res.status).to.eql(200);
           expect(bookData.title).to.eql("Trash book");
           expect(bookData.description).to.eql("Created via API");
 

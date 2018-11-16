@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, BeforeInsert, BeforeUpdate } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, BeforeInsert, BeforeUpdate } from "typeorm";
 import { Author } from "./Author";
 import { IsNotEmpty, ValidationError, validate } from "class-validator";
 import { ModelValidationError } from "../errors/ModelValidationError";
@@ -18,12 +18,10 @@ export class Book extends BaseEntity {
   @IsNotEmpty() 
   description: string;
 
-  @ManyToOne(type => Author, author => author.books, {
-    nullable: false, 
-    onDelete: "CASCADE"
-  })
+  @ManyToMany(type => Author, author => author.books)
+  @JoinTable()
   @IsNotEmpty()
-  author: Author;
+  authors: Author[];
 
   @CreateDateColumn() 
   createdAt: Date;
@@ -46,13 +44,15 @@ export class Book extends BaseEntity {
       id: this.id,
       title: this.title,
       description: this.description,
-      author: { 
-        id: this.author.id,
-        firstName: this.author.firstName,
-        lastName: this.author.lastName,
-        createdAt: this.author.createdAt,
-        updatedAt: this.author.updatedAt
-      },
+      authors: this.authors.map(author => { 
+        return {
+          id: author.id,
+          firstName: author.firstName,
+          lastName: author.lastName,
+          createdAt: author.createdAt,
+          updatedAt: author.updatedAt
+        }
+      }),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }

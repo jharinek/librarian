@@ -14,6 +14,12 @@ describe("Book routes", () => {
     await getConnection()
     .createQueryBuilder()
     .delete()
+    .from(Book)
+    .execute();
+
+    await getConnection()
+    .createQueryBuilder()
+    .delete()
     .from(Author)
     .execute();
   });
@@ -24,9 +30,9 @@ describe("Book routes", () => {
       let author2: Author = Author.create({firstName: "Clive", lastName: "Lewis"});
       await author1.save();
       await author2.save();
-      let book1: Book = Book.create({title: "Lord of the Rings", description: "This is awesome!", author: author1});
+      let book1: Book = Book.create({title: "Lord of the Rings", description: "This is awesome!", authors: [author1]});
       await book1.save();
-      let book2: Book = Book.create({title: "The Chronicles Narnia", description: "Must read this!", author: author2});
+      let book2: Book = Book.create({title: "The Chronicles Narnia", description: "Must read this!", authors: [author2]});
       await book2.save();
     });
   
@@ -39,12 +45,12 @@ describe("Book routes", () => {
           expect(booksData.length).to.eql(2);
           expect(booksData[0].title).to.eql("Lord of the Rings");
           expect(booksData[0].description).to.eql("This is awesome!");
-          expect(booksData[0].author.firstName).to.eql("John");
-          expect(booksData[0].author.lastName).to.eql("Tolkien");
+          expect(booksData[0].authors[0].firstName).to.eql("John");
+          expect(booksData[0].authors[0].lastName).to.eql("Tolkien");
           expect(booksData[1].title).to.eql("The Chronicles Narnia");
           expect(booksData[1].description).to.eql("Must read this!");
-          expect(booksData[1].author.firstName).to.eql("Clive");
-          expect(booksData[1].author.lastName).to.eql("Lewis");
+          expect(booksData[1].authors[0].firstName).to.eql("Clive");
+          expect(booksData[1].authors[0].lastName).to.eql("Lewis");
         })
     })
   
@@ -63,21 +69,24 @@ describe("Book routes", () => {
   
   describe("POST /books", async () => {
   
-    it("Creates a new book", async () => {
-      let author = await Author.create({firstName: "George", lastName: "Orwell"}).save();
+    it("Creates a new book with multiple authors", async () => {
+      let author1 = await Author.create({firstName: "George", lastName: "Orwell"}).save();
+      let author2 = await Author.create({firstName: "Juraj", lastName: "Well"}).save();
       
       return chai.request(server).post('/api/books').type("form").send({
         "book[title]": "Homage to Catalonia",
         "book[description]": "A firsthand account of the brutal conditions of the Spanish Civil War.",
-        "book[authorId]": author.id
+        "book[authorIds]": `[${author1.id}, ${author2.id}]`
       })
         .then(async res => {
           let bookData = res.body.data.book;
   
           expect(bookData.title).to.eql("Homage to Catalonia");
           expect(bookData.description).to.eql("A firsthand account of the brutal conditions of the Spanish Civil War.");
-          expect(bookData.author.firstName).to.eql("George");
-          expect(bookData.author.lastName).to.eql("Orwell");
+          expect(bookData.authors[0].firstName).to.eql("George");
+          expect(bookData.authors[0].lastName).to.eql("Orwell");
+          expect(bookData.authors[1].firstName).to.eql("Juraj");
+          expect(bookData.authors[1].lastName).to.eql("Well");
 
           let bookFromDb = await Book.findOne({title: "Homage to Catalonia"})
           expect(bookFromDb.title).to.eql("Homage to Catalonia");
@@ -91,6 +100,7 @@ describe("Book routes", () => {
           expect(res.status).to.eql(422);
           expect("title should not be empty").to.be.oneOf(res.body.errors);
           expect("description should not be empty").to.be.oneOf(res.body.errors);
+          expect("authors should not be empty").to.be.oneOf(res.body.errors)
         })
     })
   })
@@ -102,7 +112,7 @@ describe("Book routes", () => {
     before(async () => {
       author = Author.create({firstName: "Mike", lastName: "Reader"});
       await author.save();
-      book = Book.create({title: "A Book", description: "This is not importatnt test book", author: author});
+      book = Book.create({title: "A Book", description: "This is not importatnt test book", authors: [author]});
       await book.save();
     });
   
@@ -114,8 +124,8 @@ describe("Book routes", () => {
   
           expect(bookData.title).to.eql("A Book");
           expect(bookData.description).to.eql("This is not importatnt test book");
-          expect(bookData.author.firstName).to.eql("Mike");
-          expect(bookData.author.lastName).to.eql("Reader");
+          expect(bookData.authors[0].firstName).to.eql("Mike");
+          expect(bookData.authors[0].lastName).to.eql("Reader");
         })
     })
   })
@@ -126,7 +136,7 @@ describe("Book routes", () => {
     before(async () => {
       let author = Author.create({firstName: "Oliver", lastName: "Queen"});
       await author.save();
-      book = Book.create({title: "Api handbook", description: "Created via API", author: author})
+      book = Book.create({title: "Api handbook", description: "Created via API", authors: [author]})
       await book.save();
     });
   
@@ -153,7 +163,7 @@ describe("Book routes", () => {
     before(async () => {
       let author = Author.create({firstName: "Ernest", lastName: "Hemingway"});
       await author.save();
-      book = Book.create({title: "Trash book", description: "Created via API", author: author})
+      book = Book.create({title: "Trash book", description: "Created via API", authors: [author]})
       await book.save();
     });
   

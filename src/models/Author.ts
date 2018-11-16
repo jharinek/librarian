@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, BeforeInsert, BeforeUpdate } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, BeforeInsert, BeforeUpdate, JoinTable } from "typeorm";
 import { Book } from './Book';
 import { IsNotEmpty, validate, ValidationError } from "class-validator";
 import { ModelValidationError } from "../errors/ModelValidationError";
@@ -18,9 +18,7 @@ export class Author extends BaseEntity {
   @IsNotEmpty() 
   lastName: string;
   
-  @OneToMany(type => Book, book => book.author, {
-    eager: true
-  })
+  @ManyToMany(type => Book, book => book.authors)
   books: Book[];
 
   @CreateDateColumn() 

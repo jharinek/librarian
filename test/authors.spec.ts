@@ -13,6 +13,12 @@ describe("Author routes", () => {
     await getConnection()
     .createQueryBuilder()
     .delete()
+    .from(Book)
+    .execute();
+
+    await getConnection()
+    .createQueryBuilder()
+    .delete()
     .from(Author)
     .execute();
   });
@@ -23,7 +29,7 @@ describe("Author routes", () => {
       let author2: Author = Author.create({firstName: "Mike", lastName: "Well"});
       await author1.save();
       await author2.save();
-      let book: Book = Book.create({title: "The Book", description: "This is an importatnt test book", author: author1});
+      let book: Book = Book.create({title: "The Book", description: "This is an importatnt test book", authors: [author1]});
       await book.save();
     });
   
@@ -92,7 +98,7 @@ describe("Author routes", () => {
     before(async () => {
       author = Author.create({firstName: "Mike", lastName: "Well"});
       await author.save();
-      let book: Book = Book.create({title: "Another Book", description: "This is second importatnt test book", author: author});
+      let book: Book = Book.create({title: "Another Book", description: "This is second importatnt test book", authors: [author]});
       await book.save();
     });
   

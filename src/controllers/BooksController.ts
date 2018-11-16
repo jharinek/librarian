@@ -14,12 +14,12 @@ export class BooksController {
         .createQueryBuilder()
         .select("book")
         .from(Book, "book")
-        .leftJoinAndSelect("book.author", "author")
+        .leftJoinAndSelect("book.authors", "author")
         .where("book.title ilike :query", { query: `%${query}%` })
         .orWhere("book.description ilike :query", { query: `%${query}%` })
         .getMany();
     } else{
-      books = await Book.find({ relations: ["author"] } );
+      books = await Book.find({ relations: ["authors"] } );
     }
 
     res.status(200).send({
@@ -32,13 +32,16 @@ export class BooksController {
   public async create(req: Request, res: Response) {
     const params = this.bookParams(req);
     const newBook: Book = Book.create(params);
-    const author: Author = await Author.findOne(params["authorId"]);  
-    
-    if(!author){
-      throw new RecordNotFound(params["authorId"])
-    }
 
-    newBook.author = author;
+    let authors: Author[] 
+    
+    if(params["authorIds"]){
+      authors = await Author.findByIds(params["authorIds"]).catch(() => { 
+        throw new RecordNotFound(params["authorIds"]);
+      });  
+    }
+    
+    newBook.authors = authors;
     
     await newBook.save();
 
@@ -51,13 +54,16 @@ export class BooksController {
 
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
-    const book: Book = await Book.findOne(id, {relations: ["author"]});
+    const book: Book = await Book.findOne(id, {relations: ["authors"]});
     const updateParams = this.bookParams(req);
-    const author: Author = await Author.findOne(updateParams["authorId"]); 
+    let authors: Author[]
+    if(updateParams["authorIds"]){
+      authors = await Author.findByIds(updateParams["authorIds"]); 
+    }
     
     book.title = updateParams.title || book.title;
     book.description = updateParams.description || book.description;
-    book.author = author || book.author;
+    book.authors = authors || book.authors;
 
     await book.save();
   
@@ -70,7 +76,7 @@ export class BooksController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id
-    const book: Book = await Book.findOne(id, {relations: ["author"]});
+    const book: Book = await Book.findOne(id, {relations: ["authors"]});
     
     if(!book){
       throw new RecordNotFound(id);
@@ -85,7 +91,7 @@ export class BooksController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-    let book: Book = await Book.findOne(id, {relations: ["author"]});
+    let book: Book = await Book.findOne(id, {relations: ["authors"]});
 
     await book.remove();
 
@@ -96,13 +102,13 @@ export class BooksController {
     });
   }
 
-  private bookParams(req: Request): {title: string, description: string, authorId: number} {
+  private bookParams(req: Request): {title: string, description: string, authorIds: number[]} {
     const bookObject = req.body.book
 
     return {
       title: bookObject && bookObject["title"], 
       description: bookObject && bookObject["description"],
-      authorId: bookObject && bookObject["authorId"]
+      authorIds: bookObject && bookObject["authorIds"] && JSON.parse(bookObject["authorIds"])
     }
   }
 }

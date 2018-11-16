@@ -13,11 +13,12 @@ export class AuthorsController {
         .createQueryBuilder()
         .select("author")
         .from(Author, "author")
+        .leftJoinAndSelect("author.books", "book")
         .where("author.firstName ilike :query", { query: `%${query}%` })
         .orWhere("author.lastName ilike :query", { query: `%${query}%` })
         .getMany();
     } else{
-      authors = await Author.find();
+      authors = await Author.find({ relations: ["books"] });
     }
 
     res.status(200).send({
@@ -41,7 +42,7 @@ export class AuthorsController {
 
   public async update(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id);
+    const author: Author = await Author.findOne(id, { relations: ["books"] });
     const updateParams = this.authorParams(req);
     
     author.firstName = updateParams.firstName || author.firstName;
@@ -58,7 +59,7 @@ export class AuthorsController {
 
   public async show(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id)
+    const author: Author = await Author.findOne(id, { relations: ["books"] })
 
     if(!author){
       throw new RecordNotFound(id);
@@ -73,7 +74,7 @@ export class AuthorsController {
 
   public async destroy(req: Request, res: Response) {
     const id: number = req.params.id;
-    const author: Author = await Author.findOne(id);
+    const author: Author = await Author.findOne(id, { relations: ["books"] });
     
     await author.remove();
 

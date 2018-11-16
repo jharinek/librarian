@@ -30,19 +30,17 @@ export class BooksController {
   }
 
   public async create(req: Request, res: Response) {
-    const params = this.bookParams(req);
-    const newBook: Book = Book.create(params);
-
+    const createParams = this.bookParams(req);
+    const newBook: Book = Book.create(createParams);
     let authors: Author[] 
     
-    if(params["authorIds"]){
-      authors = await Author.findByIds(params["authorIds"])
+    if(createParams["authorIds"]){
+      authors = await Author.findByIds(createParams["authorIds"])
       
       if(authors.length === 0){
-        throw new RecordNotFound(params["authorIds"]);
+        throw new RecordNotFound(createParams["authorIds"]);
       }
     }
-    
     newBook.authors = authors;
     
     await newBook.save();
@@ -59,6 +57,7 @@ export class BooksController {
     const book: Book = await Book.findOne(id, {relations: ["authors"]});
     const updateParams = this.bookParams(req);
     let authors: Author[]
+    
     if(updateParams["authorIds"]){
       authors = await Author.findByIds(updateParams["authorIds"]); 
     }
